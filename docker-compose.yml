@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+db:
+image: postgres:15
+environment:
+POSTGRES_USER: demo
+POSTGRES_PASSWORD: demopass
+POSTGRES_DB: demodb
+volumes:
+- db-data:/var/lib/postgresql/data
+networks:
+- appnet
+
+
+backend:
+build: ./backend
+depends_on:
+- db
+environment:
+SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/demodb
+SPRING_DATASOURCE_USERNAME: demo
+SPRING_DATASOURCE_PASSWORD: demopass
+ports:
+- "8080:8080"
+networks:
+- appnet
+
+
+frontend:
+build: ./frontend
+ports:
+- "80:80"
+depends_on:
+- backend
+networks:
+- appnet
+
+
+volumes:
+db-data:
+
+
+networks:
+appnet:
+driver: bridge
